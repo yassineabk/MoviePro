@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "21962554754",
+    "project_id": "filmosapp-2c6ef",
+    "storage_bucket": "filmosapp-2c6ef.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:21962554754:android:d5270f9b859713baa0e39b",
+        "android_client_info": {
+          "package_name": "com.example.filmos"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "21962554754-hg39n9m08njsfs8tdsk83m712j5mtpef.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.filmos",
+            "certificate_hash": "d266e438a2faf9184ecbae0cd7dbc2ad54220f14"
+          }
+        },
+        {
+          "client_id": "21962554754-7tbf0oakdps520avovlg62sjg693lqla.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHWbk3qgKDiu3PFdckNAK97c7j5RPVLL4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "21962554754-7tbf0oakdps520avovlg62sjg693lqla.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
