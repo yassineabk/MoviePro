@@ -34,21 +34,20 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this,LoginActivity::class.java))
             finish()
         }
-
-        //Gestion des roles
-        /*if ( emailId == "admin@admin.com" ) {
-            ivEdit.setVisibility(View.GONE)
-            ivDelete.setVisibility(View.GONE)
-        }else{
-            ivEdit.setVisibility(View.VISIBLE)
-            ivDelete.setVisibility(View.VISIBLE)
-        }*/
         searchText.setOnClickListener {
             searchText.text.clear()
         }
         // Click event of the search button.
         searchButton.setOnClickListener { view ->
             setupSearchedListofDataIntoRecyclerView(searchText.text.toString())
+        }
+        // Click event of the radio button Acceptable.
+        radioBtnAcceptable.setOnClickListener {
+            setupListofAcceptableDataIntoRecyclerView()
+        }
+        // Click event of the radio button Mauvais.
+        radioBtnMauvais.setOnClickListener {
+            setupListofMauvaisDataIntoRecyclerView()
         }
         // Click event of the add button.
         btnAdd.setOnClickListener { view ->
@@ -97,7 +96,29 @@ class MainActivity : AppCompatActivity() {
         return movieList
     }
     /**
-     * Function is used to get the Items List which is added in the database table.
+     * Function is used to get the Items List filterd by Nombre de sorties which is added in the database table.
+     */
+    private fun getItemsListAcceptable(): ArrayList<MovieModelClass> {
+        //creating the instance of DatabaseHandler class
+        val databaseHandler: DatabaseHandler = DatabaseHandler(this)
+        //calling the viewMovie method of DatabaseHandler class to read the records
+        val movieList: ArrayList<MovieModelClass> = databaseHandler.viewMovieByNbrSAcceptable()
+
+        return movieList
+    }
+    /**
+     * Function is used to get the Items List filterd by Nombre de sorties which is added in the database table.
+     */
+    private fun getItemsListMauvais(): ArrayList<MovieModelClass> {
+        //creating the instance of DatabaseHandler class
+        val databaseHandler: DatabaseHandler = DatabaseHandler(this)
+        //calling the viewMovie method of DatabaseHandler class to read the records
+        val movieList: ArrayList<MovieModelClass> = databaseHandler.viewMovieByNbrSMauvais()
+
+        return movieList
+    }
+    /**
+     * Function is used to get the Searched Items List which is added in the database table.
      */
     private fun getSearchedItemsList(name:String): ArrayList<MovieModelClass> {
         //creating the instance of DatabaseHandler class
@@ -129,6 +150,44 @@ class MainActivity : AppCompatActivity() {
             tvNoRecordsAvailable.visibility = View.VISIBLE
         }
     }
+
+    private fun setupListofAcceptableDataIntoRecyclerView() {
+
+        if (getItemsList().size > 0) {
+
+            rvItemsList.visibility = View.VISIBLE
+            tvNoRecordsAvailable.visibility = View.GONE
+
+            // Set the LayoutManager that this RecyclerView will use.
+            rvItemsList.layoutManager = LinearLayoutManager(this)
+            // Adapter class is initialized and list is passed in the param.
+            val itemAdapter = ItemAdapter(this, getItemsListAcceptable())
+            // adapter instance is set to the recyclerview to inflate the items.
+            rvItemsList.adapter = itemAdapter
+        } else {
+
+            rvItemsList.visibility = View.GONE
+            tvNoRecordsAvailable.visibility = View.VISIBLE
+        }
+    }private fun setupListofMauvaisDataIntoRecyclerView() {
+
+        if (getItemsList().size > 0) {
+
+            rvItemsList.visibility = View.VISIBLE
+            tvNoRecordsAvailable.visibility = View.GONE
+
+            // Set the LayoutManager that this RecyclerView will use.
+            rvItemsList.layoutManager = LinearLayoutManager(this)
+            // Adapter class is initialized and list is passed in the param.
+            val itemAdapter = ItemAdapter(this, getItemsListMauvais())
+            // adapter instance is set to the recyclerview to inflate the items.
+            rvItemsList.adapter = itemAdapter
+        } else {
+
+            rvItemsList.visibility = View.GONE
+            tvNoRecordsAvailable.visibility = View.VISIBLE
+        }
+    }
     /**
      * Function is used to show the list (search) on UI of inserted data.
      */
@@ -151,79 +210,7 @@ class MainActivity : AppCompatActivity() {
             tvNoRecordsAvailable.visibility = View.VISIBLE
         }
     }
-    /**
-     * Method is used to show the custom update dialog.
-     */
-    fun updateRecordDialog(movieModelClass: MovieModelClass) {
-        val updateDialog = Dialog(this, R.style.Theme_Dialog)
-        updateDialog.setCancelable(false)
-        /*Set the screen content from a layout resource.
-         The resource will be inflated, adding all top-level views to the screen.*/
-        updateDialog.setContentView(R.layout.dialog_update)
 
-        updateDialog.etUpdateName.setText(movieModelClass.name)
-        updateDialog.etUpdateDirector.setText(movieModelClass.director)
-        updateDialog.etUpdateReleaseDate.setText(movieModelClass.release)
-        updateDialog.etUpdateNbrS.setText(movieModelClass.nbrS)
-
-        updateDialog.tvUpdate.setOnClickListener(View.OnClickListener {
-
-            val name = updateDialog.etUpdateName.text.toString()
-            val director = updateDialog.etUpdateDirector.text.toString()
-            val release = updateDialog.etUpdateReleaseDate.text.toString()
-            val nbrS = updateDialog.etUpdateNbrS.text.toString()
-
-            //val image = updateDialog.
-
-
-            val databaseHandler: DatabaseHandler = DatabaseHandler(this)
-
-            if (!name.isEmpty() && !director.isEmpty() && !release.isEmpty() && !nbrS.isEmpty()) {
-                val status =
-                        databaseHandler.updateMovie(MovieModelClass(movieModelClass.id, name, director, release, nbrS.toInt()))
-                if (status > -1) {
-                    Toast.makeText(applicationContext, "Movie Updated.", Toast.LENGTH_LONG).show()
-
-                    setupListofDataIntoRecyclerView()
-
-                    updateDialog.dismiss() // Dialog will be dismissed
-                }
-            } else {
-                Toast.makeText(
-                        applicationContext,
-                        "Fields cannot be blank",
-                        Toast.LENGTH_LONG
-                ).show()
-            }
-        })
-        updateDialog.tvCancel.setOnClickListener(View.OnClickListener {
-            updateDialog.dismiss()
-        })
-        //Start the dialog and display it on screen.
-        updateDialog.show()
-    }
-
-    /**
-     * Method is used to show the custom details dialog.
-     */
-    fun showRecordDialog(movieModelClass: MovieModelClass) {
-        val detailsDialog = Dialog(this, R.style.Theme_Dialog)
-        detailsDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        /*Set the screen content from a layout resource.
-         The resource will be inflated, adding all top-level views to the screen.*/
-        detailsDialog.setContentView(R.layout.details)
-
-        detailsDialog.movieName.setText(movieModelClass.name)
-        detailsDialog.movieDir.setText(movieModelClass.director)
-        detailsDialog.movieRel.setText(movieModelClass.release)
-        detailsDialog.movieEN.setText(movieModelClass.nbrS)
-
-        detailsDialog.btn_back.setOnClickListener(View.OnClickListener {
-            detailsDialog.dismiss()
-        })
-        //Start the dialog and display it on screen.
-        detailsDialog.show()
-    }
     /**
      * Method is used to show the custom details dialog.
      */
@@ -236,7 +223,11 @@ class MainActivity : AppCompatActivity() {
         intent.putExtra("movie_nbrS", movieModelClass.nbrS)
         startActivity(intent)
         finish()
-    }fun showUpdate(movieModelClass: MovieModelClass) {
+    }
+    /**
+     * Method is used to show the custom details dialog for updating the data.
+     */
+    fun showUpdate(movieModelClass: MovieModelClass) {
         val intent = Intent(this, UpdateActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         intent.putExtra("movie_id", movieModelClass.id)

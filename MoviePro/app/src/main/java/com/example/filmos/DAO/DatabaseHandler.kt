@@ -72,7 +72,7 @@ class DatabaseHandler(context: Context) :
         val movieList: ArrayList<MovieModelClass> = ArrayList<MovieModelClass>()
 
         // Query to select all the records from the table.
-        val selectQuery = "SELECT  * FROM $TABLE_CONTACTS"
+        val selectQuery = "SELECT  * FROM $TABLE_CONTACTS ORDER BY $KEY_NBR_S DESC"
 
         val db = this.readableDatabase
         // Cursor is used to read the record one by one. Add them to data model class.
@@ -109,13 +109,13 @@ class DatabaseHandler(context: Context) :
     }
 
 
-    //Method to read the records from database in form of ArrayList
+    //Method to search the records by name from database in form of ArrayList
     fun viewMovieByName(name: String): ArrayList<MovieModelClass> {
 
         val movieList: ArrayList<MovieModelClass> = ArrayList<MovieModelClass>()
 
         // Query to select all the records from the table.
-        val selectQuery = "SELECT  * FROM $TABLE_CONTACTS WHERE $KEY_NAME LIKE ?"
+        val selectQuery = "SELECT  * FROM $TABLE_CONTACTS WHERE $KEY_NAME LIKE ? ORDER BY $KEY_NBR_S DESC"
 
         val db = this.readableDatabase
         // Cursor is used to read the record one by one. Add them to data model class.
@@ -123,6 +123,90 @@ class DatabaseHandler(context: Context) :
 
         try {
             cursor = db.rawQuery(selectQuery, arrayOf('%'+name+'%'))
+
+        } catch (e: SQLiteException) {
+            db.execSQL(selectQuery)
+            return ArrayList()
+        }
+
+        var id: Int
+        var name: String
+        var director: String
+        var release: String
+        var nbrS: Int
+
+        if (cursor.moveToFirst()) {
+            do {
+                id = cursor.getInt(cursor.getColumnIndex(KEY_ID))
+                name = cursor.getString(cursor.getColumnIndex(KEY_NAME))
+                director = cursor.getString(cursor.getColumnIndex(KEY_DIRECTOR))
+                release = cursor.getString(cursor.getColumnIndex(KEY_RELEASE_DATE))
+                nbrS = cursor.getInt(cursor.getColumnIndex(KEY_NBR_S))
+
+                val movie = MovieModelClass(id = id, name = name, director = director ,release = release, nbrS = nbrS)
+                movieList.add(movie)
+
+            } while (cursor.moveToNext())
+        }
+        return movieList
+    }
+
+    //Method to search the Acceptable records from database in form of ArrayList
+    fun viewMovieByNbrSAcceptable(): ArrayList<MovieModelClass> {
+
+        val movieList: ArrayList<MovieModelClass> = ArrayList<MovieModelClass>()
+
+        // Query to select all the records from the table.
+        val selectQuery = "SELECT  * FROM $TABLE_CONTACTS WHERE $KEY_NBR_S > 0 ORDER BY $KEY_NBR_S DESC"
+
+        val db = this.readableDatabase
+        // Cursor is used to read the record one by one. Add them to data model class.
+        var cursor: Cursor? = null
+
+        try {
+            cursor = db.rawQuery(selectQuery, null)
+
+        } catch (e: SQLiteException) {
+            db.execSQL(selectQuery)
+            return ArrayList()
+        }
+
+        var id: Int
+        var name: String
+        var director: String
+        var release: String
+        var nbrS: Int
+
+        if (cursor.moveToFirst()) {
+            do {
+                id = cursor.getInt(cursor.getColumnIndex(KEY_ID))
+                name = cursor.getString(cursor.getColumnIndex(KEY_NAME))
+                director = cursor.getString(cursor.getColumnIndex(KEY_DIRECTOR))
+                release = cursor.getString(cursor.getColumnIndex(KEY_RELEASE_DATE))
+                nbrS = cursor.getInt(cursor.getColumnIndex(KEY_NBR_S))
+
+                val movie = MovieModelClass(id = id, name = name, director = director ,release = release, nbrS = nbrS)
+                movieList.add(movie)
+
+            } while (cursor.moveToNext())
+        }
+        return movieList
+    }
+
+    //Method to search the Mauvais records from database in form of ArrayList
+    fun viewMovieByNbrSMauvais(): ArrayList<MovieModelClass> {
+
+        val movieList: ArrayList<MovieModelClass> = ArrayList<MovieModelClass>()
+
+        // Query to select all the records from the table.
+        val selectQuery = "SELECT  * FROM $TABLE_CONTACTS WHERE $KEY_NBR_S = 0 ORDER BY $KEY_NBR_S DESC"
+
+        val db = this.readableDatabase
+        // Cursor is used to read the record one by one. Add them to data model class.
+        var cursor: Cursor? = null
+
+        try {
+            cursor = db.rawQuery(selectQuery, null)
 
         } catch (e: SQLiteException) {
             db.execSQL(selectQuery)
